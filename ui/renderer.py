@@ -14,12 +14,12 @@ class Renderer:
         self.btn_menu = pygame.Rect(0, 0, 0, 0)
         self.btn_reset = pygame.Rect(0, 0, 0, 0)
 
-    def draw(self, board, p1_message="", p2_message=""):
+    def draw(self, board, p1_message="", p2_message="",p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0)):
         self.screen.fill(WHITE)
         self.draw_grid(board)
         self.draw_players(board)
         self.draw_walls(board)
-        self.draw_side_panel(board, p1_message, p2_message)
+        self.draw_side_panel(board, p1_message, p2_message,p1_message_color,p2_message_color)
         self.draw_buttons(board)
 
     def draw_grid(self, board):
@@ -75,7 +75,7 @@ class Renderer:
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
 
-    def draw_side_panel(self, board, p1_message="", p2_message=""):
+    def draw_side_panel(self,board, p1_message, p2_message,p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0)):
         panel_x = (board.size * TILE_SIZE) + 20
 
         # --- Player 1 (Red) Top Area ---
@@ -84,7 +84,7 @@ class Renderer:
         self.screen.blit(p1_title, (panel_x, 50))
 
         if p1_message:
-            p1_text = self.msg_font.render(p1_message, True, BLACK)
+            p1_text = self.msg_font.render(p1_message, True, p1_message_color)
             self.screen.blit(p1_text, (panel_x, 80))
 
         # --- Player 2 (Blue) Bottom Area ---
@@ -94,7 +94,7 @@ class Renderer:
         self.screen.blit(p2_title, (panel_x, p2_title_y))
 
         if p2_message:
-            p2_text = self.msg_font.render(p2_message, True, BLACK)
+            p2_text = self.msg_font.render(p2_message, True, p2_message_color)
             self.screen.blit(p2_text, (panel_x, p2_title_y + 30))
 
     def draw_buttons(self, board):

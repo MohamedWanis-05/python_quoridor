@@ -141,17 +141,17 @@ while running:
         homescreen.draw()
     elif game_state == "PLAYING":
         if winner == 1:
-            renderer.draw(board, p1_message="You win!")
+            renderer.draw(board, p1_message="You win!",p1_message_color=(0, 255, 0))
         elif winner == 2:
-            renderer.draw(board, p2_message="You win!")
+            renderer.draw(board, p2_message="You win!",p2_message_color=(0, 255, 0))
         elif move_flags ==-100 and board.current_player.player_id == 1:
-            renderer.draw(board, p1_message="Wall block")
+            renderer.draw(board, p1_message="Wall block",p1_message_color=(255, 0, 0))
         elif move_flags ==-100 and board.current_player.player_id == 2:
-            renderer.draw(board, p2_message="Wall block")
+            renderer.draw(board, p2_message="Wall block", p2_message_color=(255, 0, 0))
         elif move_flags ==-200 and board.current_player.player_id == 1:
-            renderer.draw(board, p1_message="Outside of Board")
+            renderer.draw(board, p1_message="Outside of Board",p1_message_color=(255, 0, 0))
         elif move_flags ==-200 and board.current_player.player_id == 2:
-            renderer.draw(board, p2_message="Outside of Board")
+            renderer.draw(board, p2_message="Outside of Board",p2_message_color=(255, 0, 0))
         else:
             if board.current_player.player_id == 1:
                 renderer.draw(board, p1_message="Your turn")

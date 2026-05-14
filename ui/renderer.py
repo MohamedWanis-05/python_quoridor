@@ -5,6 +5,8 @@ from game.constants import TILE_SIZE, BOARD_SIZE, WHITE, BLACK, WALL_THICKNESS, 
 class Renderer:
     def __init__(self, screen):
         self.screen = screen
+        pygame.font.init()
+        self.font = pygame.font.SysFont(None, int(TILE_SIZE * 0.5))
 
     def draw(self, board):
         self.screen.fill(WHITE)
@@ -33,6 +35,15 @@ class Renderer:
 
             color = (220, 20, 60) if player_id == 1 else (30, 144, 255)
             pygame.draw.circle(self.screen, color, center, TILE_SIZE // 3)
+
+            if player_id == 1:
+                walls_left = board.player_1.walls_remaining
+            else:
+                walls_left = board.player_2.walls_remaining
+
+            text_surface = self.font.render(str(walls_left), True, WHITE)
+            text_rect = text_surface.get_rect(center=center)
+            self.screen.blit(text_surface, text_rect)
 
     def draw_walls(self, board):
         # draw Horizontal Walls

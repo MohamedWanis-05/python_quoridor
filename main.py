@@ -1,4 +1,5 @@
 import pygame
+from ai.easy_ai import get_easy_ai_move
 ##############
 from game.board import Board
 from ui.Homescreen import HomeScreen
@@ -10,6 +11,7 @@ from game.rules import resolve_move, resolve_diagonal_move, check_winner
 pygame.init()
 board = Board()
 screen = pygame.display.set_mode((800, 800))
+#screen = pygame.display.set_mode((board.size * TILE_SIZE + 200, board.size * TILE_SIZE + 100))
 pygame.display.set_caption("Quoridor")
 
 clock = pygame.time.Clock()
@@ -44,6 +46,8 @@ while running:
 
 
         elif event.type == pygame.KEYDOWN and winner is None:
+            if game_mode == "1vAI" and board.current_player.player_id == 2:
+                continue
             player = board.current_player
 
             dr = 0
@@ -121,6 +125,8 @@ while running:
                     continue
 
                 if winner is None:
+                    if game_mode == "1vAI" and board.current_player.player_id == 2:
+                        continue
                     closest_col = round(mouse_x / TILE_SIZE)
                     closest_row = round(mouse_y / TILE_SIZE)
 
@@ -128,6 +134,7 @@ while running:
                         wall_c = closest_col - 1
                         wall_r = closest_row - 1
 
+                        # check whether the mouse is closer to the horizontal line or vertical line of the intersection
                         dist_x = abs(mouse_x - closest_col * TILE_SIZE)
                         dist_y = abs(mouse_y - closest_row * TILE_SIZE)
 
@@ -135,21 +142,43 @@ while running:
 
                         if board.place_wall(wall_r, wall_c, is_horizontal):
                             board.switch_turn()
-        elif game_state == "PLAYING" and winner is None:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            closest_col = round(mouse_x / TILE_SIZE)
-            closest_row = round(mouse_y / TILE_SIZE)
 
-            if 1 <= closest_col <= board.size - 1 and 1 <= closest_row <= board.size - 1:
-                wall_c = closest_col - 1
-                wall_r = closest_row - 1
+        if game_state == "PLAYING" and winner is None:
+            hovered_wall = None
 
-                dist_x = abs(mouse_x - closest_col * TILE_SIZE)
-                dist_y = abs(mouse_y - closest_row * TILE_SIZE)
-                is_horizontal = dist_y < dist_x
+            if game_mode == "1vAI" and board.current_player.player_id == 2:
+                pygame.time.delay(400)
+                ai_move = get_easy_ai_move(board)
 
-                if (wall_r, wall_c) not in board.horizontal_walls and (wall_r, wall_c) not in board.vertical_walls:
-                    hovered_wall = (wall_r, wall_c, is_horizontal)
+                if ai_move is not None:
+                    if ai_move["type"] == "pawn_move":
+                        board.set_player_position(2, ai_move["position"])
+                        move_flags = None
+                        winner = check_winner(board)
+                        if winner is None:
+                            board.switch_turn()
+                        else:
+                            print(f"Player {winner} wins!")
+                    elif ai_move["type"] == "place_wall":
+                        if board.place_wall(ai_move["row"], ai_move["col"], ai_move["is_horizontal"]):
+                            move_flags = None
+                            board.switch_turn()
+
+            else:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                closest_col = round(mouse_x / TILE_SIZE)
+                closest_row = round(mouse_y / TILE_SIZE)
+
+                if 1 <= closest_col <= board.size - 1 and 1 <= closest_row <= board.size - 1:
+                    wall_c = closest_col - 1
+                    wall_r = closest_row - 1
+                    dist_x = abs(mouse_x - closest_col * TILE_SIZE)
+                    dist_y = abs(mouse_y - closest_row * TILE_SIZE)
+                    is_horizontal = dist_y < dist_x
+
+                    if (wall_r, wall_c) not in board.horizontal_walls and (wall_r, wall_c) not in board.vertical_walls:
+                        hovered_wall = (wall_r, wall_c, is_horizontal)
+
 
     if game_state == "MENU":
         homescreen.draw()

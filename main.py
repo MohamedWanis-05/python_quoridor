@@ -24,6 +24,7 @@ game_mode = None
 board_size = 9
 winner = None
 running = True
+move_flags = None # -100 for wall block, -200 for out of board
 
 while running:
     for event in pygame.event.get():
@@ -87,9 +88,8 @@ while running:
 
             else:
                 new_position = None
-
-
-            if new_position is not None:
+            move_flags = new_position
+            if new_position not in {None,-100,-200}:
 
                 board.set_player_position(
                     player.player_id,
@@ -144,6 +144,14 @@ while running:
             renderer.draw(board, p1_message="You win!")
         elif winner == 2:
             renderer.draw(board, p2_message="You win!")
+        elif move_flags ==-100 and board.current_player.player_id == 1:
+            renderer.draw(board, p1_message="Wall block")
+        elif move_flags ==-100 and board.current_player.player_id == 2:
+            renderer.draw(board, p2_message="Wall block")
+        elif move_flags ==-200 and board.current_player.player_id == 1:
+            renderer.draw(board, p1_message="Outside of Board")
+        elif move_flags ==-200 and board.current_player.player_id == 2:
+            renderer.draw(board, p2_message="Outside of Board")
         else:
             if board.current_player.player_id == 1:
                 renderer.draw(board, p1_message="Your turn")

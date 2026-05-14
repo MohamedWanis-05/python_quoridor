@@ -30,13 +30,13 @@ def resolve_move(board, player_id, dr, dc):
     opp_row, opp_col = board.get_player_position(opponent_id)
 
     if is_wall_blocking(board, row, col, dr, dc):
-        return None
+        return -100 #flag for wall block
 
     next_pos = (row + dr, col + dc)
 
     # خارج البورد
     if not is_inside_board(*next_pos):
-        return None
+        return -200 #flag for outside board block
 
     # حركة عادية
     if next_pos != (opp_row, opp_col):

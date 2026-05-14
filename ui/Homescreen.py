@@ -10,16 +10,24 @@ class HomeScreen:
         self.button_font = pygame.font.SysFont(None, 50)
 
         self.selected_mode = "1v1"
+        self.selected_size = 9
 
         center_x = WINDOW_WIDTH // 2
 
-        self.btn_1v1 = pygame.Rect(center_x - 150, 300, 140, 60)
-        self.btn_1vai = pygame.Rect(center_x + 10, 300, 140, 60)
+        self.btn_1v1 = pygame.Rect(center_x - 150, 230, 140, 60)
+        self.btn_1vai = pygame.Rect(center_x + 10, 230, 140, 60)
 
-        self.btn_start = pygame.Rect(center_x - 100, 450, 200, 70)
+        button_width = 100
+        gap = 20
+        start_x = center_x - (button_width * 1.5 + gap)
+
+        self.btn_5x5 = pygame.Rect(start_x, 340, button_width, 60)
+        self.btn_7x7 = pygame.Rect(start_x + button_width + gap, 340, button_width, 60)
+        self.btn_9x9 = pygame.Rect(start_x + 2 * (button_width + gap), 340, button_width, 60)
+
+        self.btn_start = pygame.Rect(center_x - 100, 480, 200, 70)
 
     def handle_event(self, event):
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_pos = event.pos
@@ -29,8 +37,15 @@ class HomeScreen:
                 elif self.btn_1vai.collidepoint(mouse_pos):
                     self.selected_mode = "1vAI"
 
+                elif self.btn_5x5.collidepoint(mouse_pos):
+                    self.selected_size = 5
+                elif self.btn_7x7.collidepoint(mouse_pos):
+                    self.selected_size = 7
+                elif self.btn_9x9.collidepoint(mouse_pos):
+                    self.selected_size = 9
+
                 elif self.btn_start.collidepoint(mouse_pos):
-                    return self.selected_mode
+                    return {"mode": self.selected_mode, "size": self.selected_size}
 
         return None
 
@@ -38,7 +53,7 @@ class HomeScreen:
         self.screen.fill(WHITE)
 
         title_text = self.title_font.render("QUORIDOR", True, BLACK)
-        title_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, 150))
+        title_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, 120))
         self.screen.blit(title_text, title_rect)
 
         color_1v1 = BOARD_COLOR if self.selected_mode == "1v1" else (200, 200, 200)
@@ -53,7 +68,24 @@ class HomeScreen:
         self.screen.blit(text_1v1, text_1v1.get_rect(center=self.btn_1v1.center))
         self.screen.blit(text_1vai, text_1vai.get_rect(center=self.btn_1vai.center))
 
-        # Draw Start Button
+        # --- Draw Size Buttons ---
+        color_5x5 = BOARD_COLOR if self.selected_size == 5 else (200, 200, 200)
+        color_7x7 = BOARD_COLOR if self.selected_size == 7 else (200, 200, 200)
+        color_9x9 = BOARD_COLOR if self.selected_size == 9 else (200, 200, 200)
+
+        pygame.draw.rect(self.screen, color_5x5, self.btn_5x5, border_radius=10)
+        pygame.draw.rect(self.screen, color_7x7, self.btn_7x7, border_radius=10)
+        pygame.draw.rect(self.screen, color_9x9, self.btn_9x9, border_radius=10)
+
+        text_5x5 = self.button_font.render("5x5", True, BLACK)
+        text_7x7 = self.button_font.render("7x7", True, BLACK)
+        text_9x9 = self.button_font.render("9x9", True, BLACK)
+
+        self.screen.blit(text_5x5, text_5x5.get_rect(center=self.btn_5x5.center))
+        self.screen.blit(text_7x7, text_7x7.get_rect(center=self.btn_7x7.center))
+        self.screen.blit(text_9x9, text_9x9.get_rect(center=self.btn_9x9.center))
+
+        # --- Draw Start Button ---
         pygame.draw.rect(self.screen, (46, 204, 113), self.btn_start, border_radius=10)  # Green Start Button
         text_start = self.button_font.render("START", True, WHITE)
         self.screen.blit(text_start, text_start.get_rect(center=self.btn_start.center))

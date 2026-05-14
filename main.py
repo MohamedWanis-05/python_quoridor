@@ -8,18 +8,20 @@ from game.constants import TILE_SIZE
 from game.rules import resolve_move, resolve_diagonal_move, check_winner
 
 pygame.init()
-
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+board = Board()
+screen = pygame.display.set_mode((800, 800))
+#screen = pygame.display.set_mode((board.size * TILE_SIZE + 200, board.size * TILE_SIZE + 100))
 pygame.display.set_caption("Quoridor")
 
 clock = pygame.time.Clock()
 
 homescreen = HomeScreen(screen)
-board = Board()
+
 renderer = Renderer(screen)
 
 game_state = "MENU"
 game_mode = None
+board_size = 9
 winner = None
 running = True
 
@@ -32,8 +34,13 @@ while running:
             selected_start_mode = homescreen.handle_event(event)
 
             if selected_start_mode is not None:
-                game_mode = selected_start_mode
+                game_mode = selected_start_mode["mode"]
+                board_size = selected_start_mode["size"]
                 game_state = "PLAYING"
+                screen = pygame.display.set_mode((board.size * TILE_SIZE + 200, board.size * TILE_SIZE + 100))
+                renderer.screen = screen
+                board = Board(size=board_size)
+
 
         elif event.type == pygame.KEYDOWN and winner is None:
             player = board.current_player
@@ -97,13 +104,6 @@ while running:
                 else:
                     print(f"Player {winner} wins!")
 
-                    winner = check_winner(board)
-
-                    if winner is None:
-                        board.switch_turn()
-                    else:
-                        print(f"Player {winner} wins!")
-
         elif event.type == pygame.MOUSEBUTTONDOWN and game_state == "PLAYING":
             if event.button == 1:
                 mouse_x, mouse_y = event.pos
@@ -111,10 +111,12 @@ while running:
                     game_state = "MENU"
                     board = Board()
                     winner = None
+                    screen = pygame.display.set_mode((800, 800))
+                    homescreen.screen = screen
                     continue
 
                 elif renderer.btn_reset.collidepoint(mouse_x, mouse_y):
-                    board = Board()
+                    board = Board(board_size)
                     winner = None
                     continue
 

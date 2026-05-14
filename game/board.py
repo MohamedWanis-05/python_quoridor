@@ -4,15 +4,16 @@ from ai.pathfinding import has_path_to_goal
 
 
 class Board:
-    def __init__(self):
-        self.player_1 = Player(1)
-        self.player_2 = Player(2)
+    def __init__(self,size=9):
 
-        self.size = BOARD_SIZE
+        self.size = size
+        center_col = self.size // 2
         self.player_positions = {
-            1: (0, 4),
-            2: (8, 4)
+            1: (0, center_col),
+            2: (self.size - 1, center_col)
         }
+        self.player_1 = Player(1,self.size+1)
+        self.player_2 = Player(2,self.size+1)
 
         self.horizontal_walls = set()
         self.vertical_walls = set()

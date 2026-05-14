@@ -10,7 +10,6 @@ from game.rules import resolve_move, resolve_diagonal_move, check_winner
 pygame.init()
 board = Board()
 screen = pygame.display.set_mode((800, 800))
-#screen = pygame.display.set_mode((board.size * TILE_SIZE + 200, board.size * TILE_SIZE + 100))
 pygame.display.set_caption("Quoridor")
 
 clock = pygame.time.Clock()
@@ -25,6 +24,7 @@ board_size = 9
 winner = None
 running = True
 move_flags = None # -100 for wall block, -200 for out of board
+hovered_wall = None
 
 while running:
     for event in pygame.event.get():
@@ -128,7 +128,6 @@ while running:
                         wall_c = closest_col - 1
                         wall_r = closest_row - 1
 
-                        # check whether the mouse is closer to the horizontal line or vertical line of the intersection
                         dist_x = abs(mouse_x - closest_col * TILE_SIZE)
                         dist_y = abs(mouse_y - closest_row * TILE_SIZE)
 
@@ -136,6 +135,21 @@ while running:
 
                         if board.place_wall(wall_r, wall_c, is_horizontal):
                             board.switch_turn()
+        elif game_state == "PLAYING" and winner is None:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            closest_col = round(mouse_x / TILE_SIZE)
+            closest_row = round(mouse_y / TILE_SIZE)
+
+            if 1 <= closest_col <= board.size - 1 and 1 <= closest_row <= board.size - 1:
+                wall_c = closest_col - 1
+                wall_r = closest_row - 1
+
+                dist_x = abs(mouse_x - closest_col * TILE_SIZE)
+                dist_y = abs(mouse_y - closest_row * TILE_SIZE)
+                is_horizontal = dist_y < dist_x
+
+                if (wall_r, wall_c) not in board.horizontal_walls and (wall_r, wall_c) not in board.vertical_walls:
+                    hovered_wall = (wall_r, wall_c, is_horizontal)
 
     if game_state == "MENU":
         homescreen.draw()
@@ -145,18 +159,18 @@ while running:
         elif winner == 2:
             renderer.draw(board, p2_message="You win!",p2_message_color=(0, 255, 0))
         elif move_flags ==-100 and board.current_player.player_id == 1:
-            renderer.draw(board, p1_message="Wall block",p1_message_color=(255, 0, 0))
+            renderer.draw(board, p1_message="Wall block",p1_message_color=(255, 0, 0),hovered_wall=hovered_wall)
         elif move_flags ==-100 and board.current_player.player_id == 2:
-            renderer.draw(board, p2_message="Wall block", p2_message_color=(255, 0, 0))
+            renderer.draw(board, p2_message="Wall block", p2_message_color=(255, 0, 0),hovered_wall=hovered_wall)
         elif move_flags ==-200 and board.current_player.player_id == 1:
-            renderer.draw(board, p1_message="Outside of Board",p1_message_color=(255, 0, 0))
+            renderer.draw(board, p1_message="Outside of Board",p1_message_color=(255, 0, 0),hovered_wall=hovered_wall)
         elif move_flags ==-200 and board.current_player.player_id == 2:
-            renderer.draw(board, p2_message="Outside of Board",p2_message_color=(255, 0, 0))
+            renderer.draw(board, p2_message="Outside of Board",p2_message_color=(255, 0, 0),hovered_wall=hovered_wall)
         else:
             if board.current_player.player_id == 1:
-                renderer.draw(board, p1_message="Your turn")
+                renderer.draw(board, p1_message="Your turn",hovered_wall=hovered_wall)
             else:
-                renderer.draw(board, p2_message="Your turn")
+                renderer.draw(board, p2_message="Your turn",hovered_wall=hovered_wall)
     pygame.display.flip()
     clock.tick(FPS)
 

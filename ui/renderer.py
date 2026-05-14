@@ -14,13 +14,33 @@ class Renderer:
         self.btn_menu = pygame.Rect(0, 0, 0, 0)
         self.btn_reset = pygame.Rect(0, 0, 0, 0)
 
-    def draw(self, board, p1_message="", p2_message="",p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0)):
+    def draw(self, board, p1_message="", p2_message="",p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0),hovered_wall=None):
         self.screen.fill(WHITE)
         self.draw_grid(board)
         self.draw_players(board)
         self.draw_walls(board)
         self.draw_side_panel(board, p1_message, p2_message,p1_message_color,p2_message_color)
         self.draw_buttons(board)
+
+        if hovered_wall:
+            self.draw_ghost_wall(hovered_wall)
+
+    def draw_ghost_wall(self, hovered_wall):
+        r, c, is_horizontal = hovered_wall
+
+        if is_horizontal:
+            rect_w = TILE_SIZE * 2
+            rect_h = WALL_THICKNESS
+            rect_x = c * TILE_SIZE
+            rect_y = (r + 1) * TILE_SIZE - (WALL_THICKNESS // 2)
+        else:
+            rect_w = WALL_THICKNESS
+            rect_h = TILE_SIZE * 2
+            rect_x = (c + 1) * TILE_SIZE - (WALL_THICKNESS // 2)
+            rect_y = r * TILE_SIZE
+        ghost_surface = pygame.Surface((rect_w, rect_h), pygame.SRCALPHA)
+        ghost_surface.fill((*WALL_COLOR, 128))
+        self.screen.blit(ghost_surface, (rect_x, rect_y))
 
     def draw_grid(self, board):
         for row in range(board.size):
@@ -115,3 +135,4 @@ class Renderer:
         pygame.draw.rect(self.screen, BLACK, self.btn_reset, 2, border_radius=5)
         reset_text = self.btn_font.render("Reset Game", True, BLACK)
         self.screen.blit(reset_text, reset_text.get_rect(center=self.btn_reset.center))
+

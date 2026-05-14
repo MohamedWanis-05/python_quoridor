@@ -34,6 +34,9 @@ class Renderer:
             )
 
             color = (220, 20, 60) if player_id == 1 else (30, 144, 255)
+            if player_id == board.current_player.player_id:
+                ring_radius = (TILE_SIZE // 3) + 5
+                pygame.draw.circle(self.screen, (255, 215, 0), center, ring_radius, 4)
             pygame.draw.circle(self.screen, color, center, TILE_SIZE // 3)
 
             if player_id == 1:

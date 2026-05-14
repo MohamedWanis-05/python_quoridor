@@ -1,5 +1,5 @@
 import pygame
-
+##############
 from game.board import Board
 from ui.renderer import Renderer
 from game.constants import WINDOW_WIDTH, WINDOW_HEIGHT, FPS

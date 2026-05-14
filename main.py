@@ -73,6 +73,7 @@ while running:
                         board.switch_turn()
                     else:
                         print(f"Player {winner} wins!")
+
         elif event.type == pygame.MOUSEBUTTONDOWN and winner is None:
             if event.button == 1:  # Left mouse button
                 mouse_x, mouse_y = event.pos
@@ -98,7 +99,15 @@ while running:
     if game_state == "MENU":
         homescreen.draw()
     elif game_state == "PLAYING":
-        renderer.draw(board)
+        if winner == 1:
+            renderer.draw(board, p1_message="You win!")
+        elif winner == 2:
+            renderer.draw(board, p2_message="You win!")
+        else:
+            if board.current_player.player_id == 1:
+                renderer.draw(board, p1_message="Your turn")
+            else:
+                renderer.draw(board, p2_message="Your turn")
     pygame.display.flip()
     clock.tick(FPS)
 

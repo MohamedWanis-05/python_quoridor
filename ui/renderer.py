@@ -73,13 +73,8 @@ class Renderer:
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
 
-    def draw_side_panel(self,board ,p1_message, p2_message):
+    def draw_side_panel(self,board ,p1_message="", p2_message=""):
         panel_x = (BOARD_SIZE * TILE_SIZE) + 20
-        if board.current_player.player_id == 1:
-            p1_message = "Your Turn"
-        elif board.current_player.player_id == 2:
-            p2_message = "Your Turn"
-
         # --- Player 1 (Red) Top Area ---
         p1_color = (220, 20, 60)
         p1_title = self.title_font.render("Player 1", True, p1_color)

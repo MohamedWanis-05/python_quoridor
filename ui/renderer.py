@@ -1,6 +1,5 @@
 import pygame
-from game.constants import TILE_SIZE, BOARD_SIZE, WHITE, BLACK, WALL_THICKNESS, WALL_COLOR
-
+from game.constants import TILE_SIZE, WHITE, BLACK, WALL_THICKNESS, WALL_COLOR
 
 class Renderer:
     def __init__(self, screen):
@@ -10,17 +9,22 @@ class Renderer:
 
         self.msg_font = pygame.font.SysFont(None, 28)
         self.title_font = pygame.font.SysFont(None, 32)
+        self.btn_font = pygame.font.SysFont(None, 24)
 
-    def draw(self, board,p1_message="", p2_message=""):
+        self.btn_menu = pygame.Rect(0, 0, 0, 0)
+        self.btn_reset = pygame.Rect(0, 0, 0, 0)
+
+    def draw(self, board, p1_message="", p2_message=""):
         self.screen.fill(WHITE)
-        self.draw_grid()
+        self.draw_grid(board)
         self.draw_players(board)
         self.draw_walls(board)
-        self.draw_side_panel(board,p1_message, p2_message)
+        self.draw_side_panel(board, p1_message, p2_message)
+        self.draw_buttons(board)
 
-    def draw_grid(self):
-        for row in range(BOARD_SIZE):
-            for col in range(BOARD_SIZE):
+    def draw_grid(self, board):
+        for row in range(board.size):
+            for col in range(board.size):
                 rect = pygame.Rect(
                     col * TILE_SIZE,
                     row * TILE_SIZE,
@@ -53,7 +57,6 @@ class Renderer:
             self.screen.blit(text_surface, text_rect)
 
     def draw_walls(self, board):
-        # draw Horizontal Walls
         for r, c in board.horizontal_walls:
             rect = pygame.Rect(
                 c * TILE_SIZE,
@@ -63,7 +66,6 @@ class Renderer:
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
 
-        # draw Vertical Walls
         for r, c in board.vertical_walls:
             rect = pygame.Rect(
                 (c + 1) * TILE_SIZE - (WALL_THICKNESS // 2),
@@ -73,8 +75,9 @@ class Renderer:
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
 
-    def draw_side_panel(self,board ,p1_message="", p2_message=""):
-        panel_x = (BOARD_SIZE * TILE_SIZE) + 20
+    def draw_side_panel(self, board, p1_message="", p2_message=""):
+        panel_x = (board.size * TILE_SIZE) + 20
+
         # --- Player 1 (Red) Top Area ---
         p1_color = (220, 20, 60)
         p1_title = self.title_font.render("Player 1", True, p1_color)
@@ -86,10 +89,29 @@ class Renderer:
 
         # --- Player 2 (Blue) Bottom Area ---
         p2_color = (30, 144, 255)
-        p2_title_y = (BOARD_SIZE * TILE_SIZE) - 100
+        p2_title_y = (board.size * TILE_SIZE) - 100
         p2_title = self.title_font.render("Player 2", True, p2_color)
         self.screen.blit(p2_title, (panel_x, p2_title_y))
 
         if p2_message:
             p2_text = self.msg_font.render(p2_message, True, BLACK)
             self.screen.blit(p2_text, (panel_x, p2_title_y + 30))
+
+    def draw_buttons(self, board):
+
+        button_y = (board.size * TILE_SIZE) + 40
+
+        self.btn_menu = pygame.Rect(20, button_y, 140, 40)
+        self.btn_reset = pygame.Rect(180, button_y, 140, 40)
+
+        # Menu Button
+        pygame.draw.rect(self.screen, (220, 220, 220), self.btn_menu, border_radius=5)
+        pygame.draw.rect(self.screen, BLACK, self.btn_menu, 2, border_radius=5)
+        menu_text = self.btn_font.render("Main Menu", True, BLACK)
+        self.screen.blit(menu_text, menu_text.get_rect(center=self.btn_menu.center))
+
+        # Reset Button
+        pygame.draw.rect(self.screen, (220, 220, 220), self.btn_reset, border_radius=5)
+        pygame.draw.rect(self.screen, BLACK, self.btn_reset, 2, border_radius=5)
+        reset_text = self.btn_font.render("Reset Game", True, BLACK)
+        self.screen.blit(reset_text, reset_text.get_rect(center=self.btn_reset.center))

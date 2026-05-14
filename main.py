@@ -41,7 +41,7 @@ while running:
             dr = 0
             dc = 0
             diagonal_position = None
-            
+
             if player.player_id == 1:
                 if event.key == pygame.K_UP:
                     dr = -1
@@ -62,9 +62,6 @@ while running:
                 elif event.key == pygame.K_d:
                     dc = 1
 
-            # =========================
-            # Resolve movement
-            # =========================
 
             if diagonal_position is not None:
                 new_position = resolve_diagonal_move(
@@ -79,15 +76,11 @@ while running:
                     player.player_id,
                     dr,
                     dc
-    )
+                )
 
             else:
                 new_position = None
 
-
-            # =========================
-            # Apply movement
-            # =========================
 
             if new_position is not None:
 
@@ -111,24 +104,36 @@ while running:
                     else:
                         print(f"Player {winner} wins!")
 
-        elif event.type == pygame.MOUSEBUTTONDOWN and winner is None:
-            if event.button == 1:  # Left mouse button
+        elif event.type == pygame.MOUSEBUTTONDOWN and game_state == "PLAYING":
+            if event.button == 1:
                 mouse_x, mouse_y = event.pos
-                closest_col = round(mouse_x / TILE_SIZE)
-                closest_row = round(mouse_y / TILE_SIZE)
+                if renderer.btn_menu.collidepoint(mouse_x, mouse_y):
+                    game_state = "MENU"
+                    board = Board()
+                    winner = None
+                    continue
 
-                if 1 <= closest_col <= 8 and 1 <= closest_row <= 8:
-                    wall_c = closest_col - 1
-                    wall_r = closest_row - 1
+                elif renderer.btn_reset.collidepoint(mouse_x, mouse_y):
+                    board = Board()
+                    winner = None
+                    continue
 
-                    # Check whether the mouse is closer to the horizontal line or vertical line of the intersection
-                    dist_x = abs(mouse_x - closest_col * TILE_SIZE)
-                    dist_y = abs(mouse_y - closest_row * TILE_SIZE)
+                if winner is None:
+                    closest_col = round(mouse_x / TILE_SIZE)
+                    closest_row = round(mouse_y / TILE_SIZE)
 
-                    is_horizontal = dist_y < dist_x
+                    if 1 <= closest_col <= board.size - 1 and 1 <= closest_row <= board.size - 1:
+                        wall_c = closest_col - 1
+                        wall_r = closest_row - 1
 
-                    if board.place_wall(wall_r, wall_c, is_horizontal):
-                        board.switch_turn()
+                        # check whether the mouse is closer to the horizontal line or vertical line of the intersection
+                        dist_x = abs(mouse_x - closest_col * TILE_SIZE)
+                        dist_y = abs(mouse_y - closest_row * TILE_SIZE)
+
+                        is_horizontal = dist_y < dist_x
+
+                        if board.place_wall(wall_r, wall_c, is_horizontal):
+                            board.switch_turn()
 
     if game_state == "MENU":
         homescreen.draw()

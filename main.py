@@ -1,5 +1,6 @@
 import pygame
 from ai.easy_ai import get_easy_ai_move
+from ai.medium_ai import get_medium_ai_move
 ##############
 from game.board import Board
 from ui.Homescreen import HomeScreen
@@ -22,6 +23,7 @@ renderer = Renderer(screen)
 
 game_state = "MENU"
 game_mode = None
+ai_difficulty = "Easy"
 board_size = 9
 winner = None
 running = True
@@ -147,8 +149,15 @@ while running:
             hovered_wall = None
 
             if game_mode == "1vAI" and board.current_player.player_id == 2:
+
+                renderer.draw(board, p2_message="Thinking...", hovered_wall=None)
+                pygame.display.flip()
                 pygame.time.delay(400)
-                ai_move = get_easy_ai_move(board)
+
+                if ai_difficulty == "Easy":
+                    ai_move = get_easy_ai_move(board)
+                elif ai_difficulty == "Medium":
+                    ai_move = get_medium_ai_move(board)
 
                 if ai_move is not None:
                     if ai_move["type"] == "pawn_move":

@@ -26,12 +26,12 @@ while running:
             running = False
 
         elif event.type == pygame.KEYDOWN and winner is None:
-            player_id = board.current_player
+            player = board.current_player
 
             dr = 0
             dc = 0
 
-            if player_id == 1:
+            if player.player_id == 1:
                 if event.key == pygame.K_UP:
                     dr = -1
                 elif event.key == pygame.K_DOWN:
@@ -41,7 +41,7 @@ while running:
                 elif event.key == pygame.K_RIGHT:
                     dc = 1
 
-            elif player_id == 2:
+            elif player.player_id == 2:
                 if event.key == pygame.K_w:
                     dr = -1
                 elif event.key == pygame.K_s:
@@ -52,10 +52,10 @@ while running:
                     dc = 1
 
             if dr != 0 or dc != 0:
-                new_position = resolve_move(board, player_id, dr, dc)
+                new_position = resolve_move(board, player.player_id, dr, dc)
 
                 if new_position is not None:
-                    board.set_player_position(player_id, new_position)
+                    board.set_player_position(player, new_position)
 
                     winner = check_winner(board)
 
@@ -63,6 +63,27 @@ while running:
                         board.switch_turn()
                     else:
                         print(f"Player {winner} wins!")
+        elif event.type == pygame.MOUSEBUTTONDOWN and winner is None:
+            if event.button == 1:  # Left mouse button
+                mouse_x, mouse_y = event.pos
+
+                from game.constants import TILE_SIZE
+
+                closest_col = round(mouse_x / TILE_SIZE)
+                closest_row = round(mouse_y / TILE_SIZE)
+
+                if 1 <= closest_col <= 8 and 1 <= closest_row <= 8:
+                    wall_c = closest_col - 1
+                    wall_r = closest_row - 1
+
+                    # Check whether the mouse is closer to the horizontal line or vertical line of the intersection
+                    dist_x = abs(mouse_x - closest_col * TILE_SIZE)
+                    dist_y = abs(mouse_y - closest_row * TILE_SIZE)
+
+                    is_horizontal = dist_y < dist_x
+
+                    if board.place_wall(wall_r, wall_c, is_horizontal):
+                        board.switch_turn()
 
     renderer.draw(board)
     pygame.display.flip()

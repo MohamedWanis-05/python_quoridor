@@ -1,5 +1,5 @@
 import pygame
-from game.constants import TILE_SIZE, BOARD_SIZE, WHITE, BLACK
+from game.constants import TILE_SIZE, BOARD_SIZE, WHITE, BLACK, WALL_THICKNESS, WALL_COLOR
 
 
 class Renderer:
@@ -10,6 +10,7 @@ class Renderer:
         self.screen.fill(WHITE)
         self.draw_grid()
         self.draw_players(board)
+        self.draw_walls(board)
 
     def draw_grid(self):
         for row in range(BOARD_SIZE):
@@ -32,3 +33,24 @@ class Renderer:
 
             color = (220, 20, 60) if player_id == 1 else (30, 144, 255)
             pygame.draw.circle(self.screen, color, center, TILE_SIZE // 3)
+
+    def draw_walls(self, board):
+        # draw Horizontal Walls
+        for r, c in board.horizontal_walls:
+            rect = pygame.Rect(
+                c * TILE_SIZE,
+                (r + 1) * TILE_SIZE - (WALL_THICKNESS // 2),
+                TILE_SIZE * 2,
+                WALL_THICKNESS
+            )
+            pygame.draw.rect(self.screen, WALL_COLOR, rect)
+
+        # draw Vertical Walls
+        for r, c in board.vertical_walls:
+            rect = pygame.Rect(
+                (c + 1) * TILE_SIZE - (WALL_THICKNESS // 2),
+                r * TILE_SIZE,
+                WALL_THICKNESS,
+                TILE_SIZE * 2
+            )
+            pygame.draw.rect(self.screen, WALL_COLOR, rect)

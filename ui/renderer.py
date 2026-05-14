@@ -8,11 +8,15 @@ class Renderer:
         pygame.font.init()
         self.font = pygame.font.SysFont(None, int(TILE_SIZE * 0.5))
 
-    def draw(self, board):
+        self.msg_font = pygame.font.SysFont(None, 28)
+        self.title_font = pygame.font.SysFont(None, 32)
+
+    def draw(self, board,p1_message="", p2_message=""):
         self.screen.fill(WHITE)
         self.draw_grid()
         self.draw_players(board)
         self.draw_walls(board)
+        self.draw_side_panel(board,p1_message, p2_message)
 
     def draw_grid(self):
         for row in range(BOARD_SIZE):
@@ -68,3 +72,24 @@ class Renderer:
                 TILE_SIZE * 2
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
+
+    def draw_side_panel(self,board ,p1_message="", p2_message=""):
+        panel_x = (BOARD_SIZE * TILE_SIZE) + 20
+        # --- Player 1 (Red) Top Area ---
+        p1_color = (220, 20, 60)
+        p1_title = self.title_font.render("Player 1", True, p1_color)
+        self.screen.blit(p1_title, (panel_x, 50))
+
+        if p1_message:
+            p1_text = self.msg_font.render(p1_message, True, BLACK)
+            self.screen.blit(p1_text, (panel_x, 80))
+
+        # --- Player 2 (Blue) Bottom Area ---
+        p2_color = (30, 144, 255)
+        p2_title_y = (BOARD_SIZE * TILE_SIZE) - 100
+        p2_title = self.title_font.render("Player 2", True, p2_color)
+        self.screen.blit(p2_title, (panel_x, p2_title_y))
+
+        if p2_message:
+            p2_text = self.msg_font.render(p2_message, True, BLACK)
+            self.screen.blit(p2_text, (panel_x, p2_title_y + 30))

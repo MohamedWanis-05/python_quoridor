@@ -1,6 +1,7 @@
 import pygame
 ##############
 from game.board import Board
+from ui.Homescreen import HomeScreen
 from ui.renderer import Renderer
 from game.constants import WINDOW_WIDTH, WINDOW_HEIGHT, FPS
 from game.constants import TILE_SIZE
@@ -13,9 +14,12 @@ pygame.display.set_caption("Quoridor")
 
 clock = pygame.time.Clock()
 
+homescreen = HomeScreen(screen)
 board = Board()
 renderer = Renderer(screen)
 
+game_state = "MENU"
+game_mode = None
 winner = None
 running = True
 
@@ -24,6 +28,12 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
+        if game_state == "MENU":
+            selected_start_mode = homescreen.handle_event(event)
+
+            if selected_start_mode is not None:
+                game_mode = selected_start_mode
+                game_state = "PLAYING"
 
         elif event.type == pygame.KEYDOWN and winner is None:
             player = board.current_player
@@ -100,6 +110,7 @@ while running:
                         board.switch_turn()
                     else:
                         print(f"Player {winner} wins!")
+
         elif event.type == pygame.MOUSEBUTTONDOWN and winner is None:
             if event.button == 1:  # Left mouse button
                 mouse_x, mouse_y = event.pos
@@ -119,7 +130,18 @@ while running:
                     if board.place_wall(wall_r, wall_c, is_horizontal):
                         board.switch_turn()
 
-    renderer.draw(board)
+    if game_state == "MENU":
+        homescreen.draw()
+    elif game_state == "PLAYING":
+        if winner == 1:
+            renderer.draw(board, p1_message="You win!")
+        elif winner == 2:
+            renderer.draw(board, p2_message="You win!")
+        else:
+            if board.current_player.player_id == 1:
+                renderer.draw(board, p1_message="Your turn")
+            else:
+                renderer.draw(board, p2_message="Your turn")
     pygame.display.flip()
     clock.tick(FPS)
 

@@ -54,7 +54,7 @@ def get_easy_ai_move(board):
         for dr, dc in directions:
             new_r, new_c = r + dr, c + dc
             # Look for valid adjacent squares that aren't blocked by walls
-            if is_inside_board(new_r, new_c) and not is_wall_blocking(board, r, c, dr, dc):
+            if is_inside_board(new_r, new_c,board) and not is_wall_blocking(board, r, c, dr, dc):
                 if (new_r, new_c) not in visited:
                     visited.add((new_r, new_c))
                     queue.append(((new_r, new_c), path + [(dr, dc)]))

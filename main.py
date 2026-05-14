@@ -149,7 +149,7 @@ while running:
             hovered_wall = None
 
             if game_mode == "1vAI" and board.current_player.player_id == 2:
-
+                ai_move = None
                 renderer.draw(board, p2_message="Thinking...", hovered_wall=None)
                 pygame.display.flip()
                 pygame.time.delay(400)

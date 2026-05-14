@@ -5,7 +5,7 @@ from game.rules import is_inside_board, is_wall_blocking
 
 def has_path_to_goal(board, player_id):
     start = board.get_player_position(player_id)
-    goal_row = BOARD_SIZE - 1 if player_id == 1 else 0
+    goal_row = board.size - 1 if player_id == 1 else 0
 
     visited = set()
     queue = deque([start])
@@ -32,7 +32,7 @@ def has_path_to_goal(board, player_id):
             new_row = row + dr
             new_col = col + dc
 
-            if not is_inside_board(new_row, new_col):
+            if not is_inside_board(new_row, new_col,board):
                 continue
 
             if is_wall_blocking(board, row, col, dr, dc):

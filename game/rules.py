@@ -93,3 +93,35 @@ def check_winner(board):
         return 2
 
     return None
+def resolve_diagonal_move(board, player_id, new_position):
+    row, col = board.get_player_position(player_id)
+
+    opponent_id = 2 if player_id == 1 else 1
+    opp_row, opp_col = board.get_player_position(opponent_id)
+
+    new_row, new_col = new_position
+
+    if not is_inside_board(new_row, new_col):
+        return None
+
+    if abs(new_row - row) != 1 or abs(new_col - col) != 1:
+        return None
+
+    adjacent_to_opponent = (
+        abs(row - opp_row) + abs(col - opp_col) == 1
+    )
+
+    if not adjacent_to_opponent:
+        return None
+
+    valid_diagonal_positions = [
+        (opp_row - 1, opp_col),
+        (opp_row + 1, opp_col),
+        (opp_row, opp_col - 1),
+        (opp_row, opp_col + 1)
+    ]
+
+    if new_position not in valid_diagonal_positions:
+        return None
+
+    return new_position

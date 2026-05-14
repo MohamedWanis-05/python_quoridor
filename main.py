@@ -3,8 +3,8 @@ import pygame
 from game.board import Board
 from ui.renderer import Renderer
 from game.constants import WINDOW_WIDTH, WINDOW_HEIGHT, FPS
-from game.rules import resolve_move, check_winner
-
+from game.constants import TILE_SIZE
+from game.rules import resolve_move, resolve_diagonal_move, check_winner
 
 pygame.init()
 
@@ -30,7 +30,8 @@ while running:
 
             dr = 0
             dc = 0
-
+            diagonal_position = None
+            
             if player.player_id == 1:
                 if event.key == pygame.K_UP:
                     dr = -1
@@ -51,11 +52,47 @@ while running:
                 elif event.key == pygame.K_d:
                     dc = 1
 
-            if dr != 0 or dc != 0:
-                new_position = resolve_move(board, player.player_id, dr, dc)
+            # =========================
+            # Resolve movement
+            # =========================
 
-                if new_position is not None:
-                    board.set_player_position(player, new_position)
+            if diagonal_position is not None:
+                new_position = resolve_diagonal_move(
+                    board,
+                    player.player_id,
+                    diagonal_position
+                )
+
+            elif dr != 0 or dc != 0:
+                new_position = resolve_move(
+                    board,
+                    player.player_id,
+                    dr,
+                    dc
+    )
+
+            else:
+                new_position = None
+
+
+            # =========================
+            # Apply movement
+            # =========================
+
+            if new_position is not None:
+
+                board.set_player_position(
+                    player.player_id,
+                    new_position
+                )
+
+                winner = check_winner(board)
+
+                if winner is None:
+                    board.switch_turn()
+
+                else:
+                    print(f"Player {winner} wins!")
 
                     winner = check_winner(board)
 
@@ -66,9 +103,6 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and winner is None:
             if event.button == 1:  # Left mouse button
                 mouse_x, mouse_y = event.pos
-
-                from game.constants import TILE_SIZE
-
                 closest_col = round(mouse_x / TILE_SIZE)
                 closest_row = round(mouse_y / TILE_SIZE)
 

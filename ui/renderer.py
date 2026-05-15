@@ -12,6 +12,8 @@ class Renderer:
         self.title_font = pygame.font.SysFont(None, 32)
         self.btn_font = pygame.font.SysFont(None, 24)
 
+        self.hint_font = pygame.font.SysFont(None, 22)
+
         self.btn_menu = pygame.Rect(0, 0, 0, 0)
         self.btn_reset = pygame.Rect(0, 0, 0, 0)
 
@@ -61,14 +63,20 @@ class Renderer:
                 pygame.draw.rect(self.screen, BLACK, rect, 1)
 
     def draw_valid_moves(self, valid_moves):
-        for move in valid_moves:
-            if isinstance(move, tuple):
-                row, col = move
+        for move_data in valid_moves:
+            if len(move_data) == 2:
+                (row, col), key_text = move_data
+
                 center = (
                     col * TILE_SIZE + TILE_SIZE // 2,
                     row * TILE_SIZE + TILE_SIZE // 2
                 )
-                pygame.draw.circle(self.screen, (0, 255, 0), center, 10)
+
+                pygame.draw.circle(self.screen, (150, 255, 150), center, 15)
+
+                text_surf = self.hint_font.render(key_text, True, BLACK)
+                text_rect = text_surf.get_rect(center=center)
+                self.screen.blit(text_surf, text_rect)
 
     def draw_players(self, board):
         for player_id, position in board.player_positions.items():

@@ -29,28 +29,33 @@ move_flags = None  # -100 for wall block, -200 for out of board
 hovered_wall = None
 
 def get_valid_highlights(board):
-    """Return all valid moves for the current player, including diagonal moves."""
+    """Return all valid moves and their corresponding keys for the current player."""
     player_id = board.current_player.player_id
     row, col = board.get_player_position(player_id)
 
     valid_moves = []
 
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-
-    for dr, dc in directions:
+    if player_id == 1:
+        dir_keys = {(-1, 0): "UP", (1, 0): "DOWN", (0, -1): "LEFT", (0, 1): "RIGHT"}
+        diag_keys = {
+            (row - 1, col - 1): "U", (row - 1, col + 1): "O",
+            (row + 1, col - 1): "J", (row + 1, col + 1): "L"
+        }
+    else:
+        dir_keys = {(-1, 0): "W", (1, 0): "S", (0, -1): "A", (0, 1): "D"}
+        diag_keys = {
+            (row - 1, col - 1): "Q", (row - 1, col + 1): "E",
+            (row + 1, col - 1): "Z", (row + 1, col + 1): "C"
+        }
+    for (dr, dc), key_name in dir_keys.items():
         move = resolve_move(board, player_id, dr, dc)
         if move not in {None, -100, -200}:
-            valid_moves.append(move)
+            valid_moves.append((move, key_name))
 
-    diagonal_candidates = [
-        (row - 1, col - 1), (row - 1, col + 1),
-        (row + 1, col - 1), (row + 1, col + 1)
-    ]
-
-    for position in diagonal_candidates:
+    for position, key_name in diag_keys.items():
         move = resolve_diagonal_move(board, player_id, position)
         if move not in {None, -100, -200}:
-            valid_moves.append(move)
+            valid_moves.append((move, key_name))
 
     return valid_moves
 

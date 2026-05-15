@@ -1,7 +1,7 @@
 from game.constants import BOARD_SIZE
 
-def is_inside_board(row, col,Board):
-    return 0 <= row < Board.size and 0 <= col < Board.size
+def is_inside_board(row, col, board):
+    return 0 <= row < board.size and 0 <= col < board.size
 
 
 def is_wall_blocking(board, r, c, dr, dc):
@@ -30,13 +30,13 @@ def resolve_move(board, player_id, dr, dc):
     opp_row, opp_col = board.get_player_position(opponent_id)
 
     if is_wall_blocking(board, row, col, dr, dc):
-        return -100 #flag for wall block
+        return -100  # flag for wall block
 
     next_pos = (row + dr, col + dc)
 
     # خارج البورد
-    if not is_inside_board(*next_pos,Board=board):
-        return -200 #flag for outside board block
+    if not is_inside_board(*next_pos, board=board):
+        return -200  # flag for outside board block
 
     # حركة عادية
     if next_pos != (opp_row, opp_col):
@@ -47,37 +47,64 @@ def resolve_move(board, player_id, dr, dc):
     # =========================
     jump_pos = (opp_row + dr, opp_col + dc)
     jump_blocked = is_wall_blocking(board, opp_row, opp_col, dr, dc)
+
     # لو القفزة متاحة
-    if is_inside_board(*jump_pos,Board=board) and not jump_blocked:
+    if is_inside_board(*jump_pos, board=board) and not jump_blocked:
         return jump_pos
 
-    # =========================
-    # Diagonal Around Opponent
-    # =========================
+    return None
 
-    # حركة رأسية
-    if dr != 0:
 
-        diagonal_left = (opp_row, opp_col - 1)
-        diagonal_right = (opp_row, opp_col + 1)
+def resolve_diagonal_move(board, player_id, new_position):
+    row, col = board.get_player_position(player_id)
 
-        if is_inside_board(*diagonal_left,Board=board) and not is_wall_blocking(board, opp_row, opp_col, 0, -1):
-            return diagonal_left
+    opponent_id = 2 if player_id == 1 else 1
+    opp_row, opp_col = board.get_player_position(opponent_id)
 
-        if is_inside_board(*diagonal_right,Board=board) and not is_wall_blocking(board, opp_row, opp_col, 0, 1):
-            return diagonal_right
+    new_row, new_col = new_position
 
-    # حركة أفقية
-    elif dc != 0:
+    if not is_inside_board(new_row, new_col, board=board):
+        return -200  # outside board block
 
-        diagonal_up = (opp_row - 1, opp_col)
-        diagonal_down = (opp_row + 1, opp_col)
+    dr = new_row - row
+    dc = new_col - col
 
-        if is_inside_board(*diagonal_up,Board=board) and not is_wall_blocking(board, opp_row, opp_col, -1, 0):
-            return diagonal_up
 
-        if is_inside_board(*diagonal_down,Board=board) and not is_wall_blocking(board, opp_row, opp_col, 1, 0):
-            return diagonal_down
+    if abs(dr) != 1 or abs(dc) != 1:
+        return None
+
+
+    opp_dr = opp_row - row
+    opp_dc = opp_col - col
+
+    if abs(opp_dr) + abs(opp_dc) != 1:
+        return None
+
+    if opp_dc == 0:
+        straight_jump_row = opp_row + opp_dr
+        straight_blocked = not is_inside_board(straight_jump_row, opp_col, board=board) or \
+                           is_wall_blocking(board, opp_row, opp_col, opp_dr, 0)
+
+        if not straight_blocked:
+            return None
+
+        if is_wall_blocking(board, opp_row, opp_col, 0, dc):
+            return -100  # Wall blocking the side step
+
+        return new_position
+
+    elif opp_dr == 0:
+        straight_jump_col = opp_col + opp_dc
+        straight_blocked = not is_inside_board(opp_row, straight_jump_col, board=board) or \
+                           is_wall_blocking(board, opp_row, opp_col, 0, opp_dc)
+
+        if not straight_blocked:
+            return None
+
+        if is_wall_blocking(board, opp_row, opp_col, dr, 0):
+            return -100  # Wall blocking the side step
+
+        return new_position
 
     return None
 
@@ -93,35 +120,3 @@ def check_winner(board):
         return 2
 
     return None
-def resolve_diagonal_move(board, player_id, new_position):
-    row, col = board.get_player_position(player_id)
-
-    opponent_id = 2 if player_id == 1 else 1
-    opp_row, opp_col = board.get_player_position(opponent_id)
-
-    new_row, new_col = new_position
-
-    if not is_inside_board(new_row, new_col,Board=board):
-        return None
-
-    if abs(new_row - row) != 1 or abs(new_col - col) != 1:
-        return None
-
-    adjacent_to_opponent = (
-        abs(row - opp_row) + abs(col - opp_col) == 1
-    )
-
-    if not adjacent_to_opponent:
-        return None
-
-    valid_diagonal_positions = [
-        (opp_row - 1, opp_col),
-        (opp_row + 1, opp_col),
-        (opp_row, opp_col - 1),
-        (opp_row, opp_col + 1)
-    ]
-
-    if new_position not in valid_diagonal_positions:
-        return None
-
-    return new_position

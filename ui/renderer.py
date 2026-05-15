@@ -1,6 +1,7 @@
 import pygame
 from game.constants import TILE_SIZE, WHITE, BLACK, WALL_THICKNESS, WALL_COLOR
 
+
 class Renderer:
     def __init__(self, screen):
         self.screen = screen
@@ -14,13 +15,18 @@ class Renderer:
         self.btn_menu = pygame.Rect(0, 0, 0, 0)
         self.btn_reset = pygame.Rect(0, 0, 0, 0)
 
-    def draw(self, board, p1_message="", p2_message="",p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0),hovered_wall=None):
+    def draw(self, board, p1_message="", p2_message="", p1_message_color=(0, 0, 0), p2_message_color=(0, 0, 0),
+             hovered_wall=None, valid_moves=None):
+        if valid_moves is None:
+            valid_moves = []
+
         self.screen.fill(WHITE)
         self.draw_grid(board)
-        self.draw_valid_moves(board)
+        self.draw_valid_moves(valid_moves)
+
         self.draw_players(board)
         self.draw_walls(board)
-        self.draw_side_panel(board, p1_message, p2_message,p1_message_color,p2_message_color)
+        self.draw_side_panel(board, p1_message, p2_message, p1_message_color, p2_message_color)
         self.draw_buttons(board)
 
         if hovered_wall:
@@ -54,36 +60,22 @@ class Renderer:
                 )
                 pygame.draw.rect(self.screen, BLACK, rect, 1)
 
-    def draw_valid_moves(self, board):#marsoof
-
-        from game.rules import resolve_move
-
-        directions = [(-1, 0),(1, 0),(0, -1),(0, 1)]
-
-        player_id = board.current_player.player_id
-
-        for dr, dc in directions:
-
-            move = resolve_move(board, player_id, dr, dc)
-
+    def draw_valid_moves(self, valid_moves):
+        for move in valid_moves:
             if isinstance(move, tuple):
-
                 row, col = move
-
                 center = (
                     col * TILE_SIZE + TILE_SIZE // 2,
                     row * TILE_SIZE + TILE_SIZE // 2
                 )
-
-                pygame.draw.circle(self.screen,(0, 255, 0),center,10)
-
+                pygame.draw.circle(self.screen, (0, 255, 0), center, 10)
 
     def draw_players(self, board):
         for player_id, position in board.player_positions.items():
             row, col = position
             center = (
                 col * TILE_SIZE + TILE_SIZE // 2,
-                row * TILE_SIZE + TILE_SIZE // 2    
+                row * TILE_SIZE + TILE_SIZE // 2
             )
 
             color = (220, 20, 60) if player_id == 1 else (30, 144, 255)
@@ -120,7 +112,7 @@ class Renderer:
             )
             pygame.draw.rect(self.screen, WALL_COLOR, rect)
 
-    def draw_side_panel(self,board, p1_message, p2_message,p1_message_color=(0, 0, 0),p2_message_color=(0, 0, 0)):
+    def draw_side_panel(self, board, p1_message, p2_message, p1_message_color=(0, 0, 0), p2_message_color=(0, 0, 0)):
         panel_x = (board.size * TILE_SIZE) + 20
 
         # --- Player 1 (Red) Top Area ---
@@ -148,7 +140,6 @@ class Renderer:
 
         self.btn_menu = pygame.Rect(20, button_y, 140, 40)
         self.btn_reset = pygame.Rect(180, button_y, 140, 40)
-        
         # Menu Button
         pygame.draw.rect(self.screen, (220, 220, 220), self.btn_menu, border_radius=5)
         pygame.draw.rect(self.screen, BLACK, self.btn_menu, 2, border_radius=5)
@@ -160,4 +151,3 @@ class Renderer:
         pygame.draw.rect(self.screen, BLACK, self.btn_reset, 2, border_radius=5)
         reset_text = self.btn_font.render("Reset Game", True, BLACK)
         self.screen.blit(reset_text, reset_text.get_rect(center=self.btn_reset.center))
-

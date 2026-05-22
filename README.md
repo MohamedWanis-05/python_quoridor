@@ -35,32 +35,28 @@
 
 ```
 Elle3ba-main/
-├── main.py                  # Entry point — game loop and event handling
-├── requirements.txt         # Python dependencies
-│
+├── main.py
+├── requirements.txt
 ├── game/
-│   ├── board.py             # Board state, player positions, wall placement
-│   ├── constants.py         # Colors, tile size, window size, FPS
-│   ├── player.py            # Player class (ID + walls remaining)
-│   ├── rules.py             # Move resolution, wall checks, winner detection
-│   └── wall.py              # Reserved for future wall logic
-│
+│   ├── board.py
+│   ├── constants.py
+│   ├── player.py
+│   ├── rules.py
+│   └── wall.py
 ├── ai/
-│   ├── easy_ai.py           # Easy AI — BFS pathfinding + random wall blocking
-│   ├── medium_ai.py         # Medium AI — defensive walls + shortest-path sprint
-│   ├── minimax.py           # Reserved — future Hard AI (Minimax)
-│   └── pathfinding.py       # BFS utility — validates paths remain open
-│
+│   ├── easy_ai.py
+│   ├── medium_ai.py
+│   ├── minimax.py
+│   └── pathfinding.py
 ├── ui/
-│   ├── Homescreen.py        # Main menu (mode, size, difficulty selection)
-│   ├── renderer.py          # In-game rendering (grid, players, walls, panel)
-│   ├── animations.py        # Reserved — future animations
-│   └── buttons.py           # Reserved — future button components
-│
+│   ├── Homescreen.py
+│   ├── renderer.py
+│   ├── animations.py
+│   └── buttons.py
 └── tests/
-    ├── test_pathfinding.py  # Planned — pathfinding unit tests
-    └── test_rules.py        # Planned — game rules unit tests
-```
+    ├── test_pathfinding.py
+    └── test_rules.py
+
 
 ---
 

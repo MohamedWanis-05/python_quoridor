@@ -181,21 +181,7 @@ python main.py
 
 ---
 
-##  Contributing
 
-Contributions are welcome! Areas that need work:
-
-| Area | File |
-|---|---|
-| Hard AI (Minimax) | `ai/minimax.py` |
-| Animations | `ui/animations.py` |
-| Reusable button components | `ui/buttons.py` |
-| Pathfinding tests | `tests/test_pathfinding.py` |
-| Rules unit tests | `tests/test_rules.py` |
-
-Feel free to open an issue or submit a pull request!
-
----
 
 
 

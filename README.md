@@ -35,40 +35,34 @@
 
 ```
 Elle3ba-main/
-├── main.py
-├── requirements.txt
+├── main.py                  # Entry point — game loop and event handling
+├── requirements.txt         # Python dependencies
+│
 ├── game/
-│   ├── board.py
-│   ├── constants.py
-│   ├── player.py
-│   ├── rules.py
-│   └── wall.py
+│   ├── board.py             # Board state, player positions, wall placement
+│   ├── constants.py         # Colors, tile size, window size, FPS
+│   ├── player.py            # Player class (ID + walls remaining)
+│   ├── rules.py             # Move resolution, wall checks, winner detection
+│   └── wall.py              # Reserved for future wall logic
+│
 ├── ai/
-│   ├── easy_ai.py
-│   ├── medium_ai.py
-│   ├── minimax.py
-│   └── pathfinding.py
+│   ├── easy_ai.py           # Easy AI — BFS pathfinding + random wall blocking
+│   ├── medium_ai.py         # Medium AI — defensive walls + shortest-path sprint
+│   ├── minimax.py           # Reserved — future Hard AI (Minimax)
+│   └── pathfinding.py       # BFS utility — validates paths remain open
+│
 ├── ui/
-│   ├── Homescreen.py
-│   ├── renderer.py
-│   ├── animations.py
-│   └── buttons.py
+│   ├── Homescreen.py        # Main menu (mode, size, difficulty selection)
+│   ├── renderer.py          # In-game rendering (grid, players, walls, panel)
+│   ├── animations.py        # Reserved — future animations
+│   └── buttons.py           # Reserved — future button components
+│
 └── tests/
-    ├── test_pathfinding.py
-    └── test_rules.py
-
+    ├── test_pathfinding.py  # Planned — pathfinding unit tests
+    └── test_rules.py        # Planned — game rules unit tests
+```
 
 ---
-
-FileDescriptionmain.pyEntry point — game loop and event handlingrequirements.txtPython dependencies
-game/ — Core Game Logic
-FileDescriptionboard.pyBoard state, player positions, wall placementconstants.pyColors, tile size, window size, FPSplayer.pyPlayer class (ID + walls remaining)rules.pyMove resolution, wall checks, winner detectionwall.pyReserved for future wall logic
- ai/ — Artificial Intelligence
-FileDescriptioneasy_ai.pyEasy AI — BFS pathfinding + random wall blockingmedium_ai.pyMedium AI — defensive walls + shortest-path sprintminimax.pyReserved — future Hard AI (Minimax)pathfinding.pyBFS utility — validates paths remain open
- ui/ — User Interface
-FileDescriptionHomescreen.pyMain menu (mode, size, difficulty selection)renderer.pyIn-game rendering (grid, players, walls, panel)animations.pyReserved — future animationsbuttons.pyReserved — future button components
- tests/ — Testing
-FileDescriptiontest_pathfinding.pyPlanned — pathfinding unit teststest_rules.pyPlanned — game rules unit tests
 
 ## ⚙ Requirements
 

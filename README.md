@@ -64,6 +64,16 @@ Elle3ba-main/
 
 ---
 
+FileDescriptionmain.pyEntry point — game loop and event handlingrequirements.txtPython dependencies
+game/ — Core Game Logic
+FileDescriptionboard.pyBoard state, player positions, wall placementconstants.pyColors, tile size, window size, FPSplayer.pyPlayer class (ID + walls remaining)rules.pyMove resolution, wall checks, winner detectionwall.pyReserved for future wall logic
+ ai/ — Artificial Intelligence
+FileDescriptioneasy_ai.pyEasy AI — BFS pathfinding + random wall blockingmedium_ai.pyMedium AI — defensive walls + shortest-path sprintminimax.pyReserved — future Hard AI (Minimax)pathfinding.pyBFS utility — validates paths remain open
+ ui/ — User Interface
+FileDescriptionHomescreen.pyMain menu (mode, size, difficulty selection)renderer.pyIn-game rendering (grid, players, walls, panel)animations.pyReserved — future animationsbuttons.pyReserved — future button components
+ tests/ — Testing
+FileDescriptiontest_pathfinding.pyPlanned — pathfinding unit teststest_rules.pyPlanned — game rules unit tests
+
 ## ⚙ Requirements
 
 | Requirement | Version |
@@ -186,6 +196,6 @@ python main.py
 
 
 
-M
+
 
 </div>

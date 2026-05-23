@@ -1,6 +1,7 @@
 import pygame
 from ai.easy_ai import get_easy_ai_move
 from ai.medium_ai import get_medium_ai_move
+from ai.hard_ai import get_hard_ai_move
 ##############
 from game.board import Board
 from ui.Homescreen import HomeScreen
@@ -206,6 +207,8 @@ while running:
                     ai_move = get_easy_ai_move(board)
                 elif ai_difficulty == "Medium":
                     ai_move = get_medium_ai_move(board)
+                elif ai_difficulty == "Hard":
+                    ai_move = get_hard_ai_move(board)
 
                 if ai_move is not None:
                     if ai_move["type"] == "pawn_move":

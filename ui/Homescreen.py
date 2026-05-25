@@ -13,7 +13,6 @@ class HomeScreen:
         self.selected_mode = "1v1"
         self.selected_size = 9
 
-        # --- NEW: Added difficulty variable ---
         self.selected_difficulty = "Easy"
 
         center_x = WINDOW_WIDTH // 2
@@ -21,19 +20,16 @@ class HomeScreen:
         self.btn_1v1 = pygame.Rect(center_x - 150, 230, 140, 60)
         self.btn_1vai = pygame.Rect(center_x + 10, 230, 140, 60)
 
-        # --- NEW: Added difficulty button rect ---
         self.btn_difficulty = pygame.Rect(center_x - 100, 310, 200, 40)
 
         button_width = 100
         gap = 20
         start_x = center_x - (button_width * 1.5 + gap)
 
-        # --- UPDATED: Pushed these down from 340 to 380 ---
         self.btn_5x5 = pygame.Rect(start_x, 380, button_width, 60)
         self.btn_7x7 = pygame.Rect(start_x + button_width + gap, 380, button_width, 60)
         self.btn_9x9 = pygame.Rect(start_x + 2 * (button_width + gap), 380, button_width, 60)
 
-        # --- UPDATED: Pushed this down from 480 to 500 ---
         self.btn_start = pygame.Rect(center_x - 100, 500, 200, 70)
 
     def handle_event(self, event):
@@ -46,7 +42,6 @@ class HomeScreen:
                 elif self.btn_1vai.collidepoint(mouse_pos):
                     self.selected_mode = "1vAI"
 
-                # --- NEW: Difficulty click logic (Cycles Easy -> Medium -> Hard) ---
                 elif self.selected_mode == "1vAI" and self.btn_difficulty.collidepoint(mouse_pos):
                     if self.selected_difficulty == "Easy":
                         self.selected_difficulty = "Medium"
@@ -90,7 +85,6 @@ class HomeScreen:
         self.screen.blit(text_1v1, text_1v1.get_rect(center=self.btn_1v1.center))
         self.screen.blit(text_1vai, text_1vai.get_rect(center=self.btn_1vai.center))
 
-        # --- NEW: Draw Difficulty Button (ONLY IF 1vAI IS SELECTED) ---
         if self.selected_mode == "1vAI":
             if self.selected_difficulty == "Easy":
                 diff_color = (100, 200, 100)  # Green

@@ -33,32 +33,20 @@ class Board:
         if self.current_player.walls_remaining <= 0:
             return False
 
-        # invalid placement
         if not self.can_place_wall(r, c, is_horizontal):
             return False
 
-        # =========================
-        # Place wall temporarily
-        # =========================
 
         if is_horizontal:
             self.horizontal_walls.add((r, c))
         else:
             self.vertical_walls.add((r, c))
 
-        # نقص wall مؤقتًا
         self.current_player.walls_remaining -= 1
 
-    # =========================
-    # BFS Validation
-    # =========================
 
         player1_has_path = has_path_to_goal(self, 1)
         player2_has_path = has_path_to_goal(self, 2)
-
-    # =========================
-    # Invalid wall -> rollback
-    # =========================
 
         if not player1_has_path or not player2_has_path:
 
@@ -66,8 +54,6 @@ class Board:
                 self.horizontal_walls.remove((r, c))
             else:
                 self.vertical_walls.remove((r, c))
-
-            # رجّع wall count
             self.current_player.walls_remaining += 1
 
             return False
@@ -78,29 +64,33 @@ class Board:
 
         if is_horizontal:
 
-            if r < 0 or r >= BOARD_SIZE - 1:
+            if r < 0 or r >= self.size - 1:
                 return False
 
-            if c < 0 or c >= BOARD_SIZE - 1:
+            if c < 0 or c >= self.size - 1:
                 return False
 
-            # overlap
             if (r, c) in self.horizontal_walls:
                 return False
 
-            # crossing
+            if (r, c + 1) in self.horizontal_walls:
+                return False
+
             if (r, c) in self.vertical_walls:
                 return False
 
         else:
 
-            if r < 0 or r >= BOARD_SIZE - 1:
+            if r < 0 or r >= self.size - 1:
                 return False
 
-            if c < 0 or c >= BOARD_SIZE - 1:
+            if c < 0 or c >= self.size - 1:
                 return False
 
             if (r, c) in self.vertical_walls:
+                return False
+
+            if (r + 1, c) in self.vertical_walls:
                 return False
 
             if (r, c) in self.horizontal_walls:

@@ -5,9 +5,6 @@ def is_inside_board(row, col, board):
 
 
 def is_wall_blocking(board, r, c, dr, dc):
-    """
-    check if a wall prevents movement from cell (r, c) in direction (dr, dc).
-    """
     if dr == -1:  # Move UP
         if (r - 1, c - 1) in board.horizontal_walls or (r - 1, c) in board.horizontal_walls:
             return True

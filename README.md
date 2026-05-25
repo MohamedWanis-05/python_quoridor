@@ -21,7 +21,7 @@
 |---|---|
 | 🎮 **Two Game Modes** | Player vs Player (1v1) or Player vs AI (1vAI) |
 | 📐 **Three Board Sizes** | Choose between 5×5, 7×7, or 9×9 grids |
-| 🤖 **AI Difficulty** | Easy and Medium AI opponents |
+| 🤖 **AI Difficulty** | Easy and Medium and Hard AI opponents |
 | 👻 **Wall Preview** | Ghost wall appears on hover before placing |
 | 🟢 **Move Highlights** | Green dots show all legal moves each turn |
 | 🔀 **Jump Mechanics** | Jump over opponent, including diagonal jumps |
@@ -48,18 +48,13 @@ Elle3ba-main/
 ├── ai/
 │   ├── easy_ai.py           # Easy AI — BFS pathfinding + random wall blocking
 │   ├── medium_ai.py         # Medium AI — defensive walls + shortest-path sprint
-│   ├── minimax.py           # Reserved — future Hard AI (Minimax)
+|    ├── hard_ai.py           # Hard Minimax with alpha-beta pruning
+│   ├── minimax.py
 │   └── pathfinding.py       # BFS utility — validates paths remain open
 │
 ├── ui/
 │   ├── Homescreen.py        # Main menu (mode, size, difficulty selection)
 │   ├── renderer.py          # In-game rendering (grid, players, walls, panel)
-│   ├── animations.py        # Reserved — future animations
-│   └── buttons.py           # Reserved — future button components
-│
-└── tests/
-    ├── test_pathfinding.py  # Planned — pathfinding unit tests
-    └── test_rules.py        # Planned — game rules unit tests
 ```
 
 ---
@@ -161,7 +156,7 @@ python main.py
 |:---:|---|---|
 | 🟢 **Easy** | BFS shortest path to goal row | 25% chance per turn to randomly block the human |
 | 🟠 **Medium** | Compares both paths — sprints when ahead, blocks when behind | Targets human's very next step |
-| 🔴 **Hard** | *(Coming Soon)* Minimax with alpha-beta pruning | Smart lookahead wall placement |
+| 🔴 **Hard** |  Minimax with alpha-beta pruning | Smart lookahead wall placement |
 
 ---
 
@@ -174,10 +169,7 @@ python main.py
 | ✅ | Wall ghost preview |
 | ✅ | BFS wall validation |
 | ✅ | Valid move highlights |
-| 🔄 | Hard AI (Minimax) |
-| 🔄 | Animations |
-| 🔄 | Sound effects & music |
-| 🔄 | Unit tests (pathfinding & rules) |
+| ✅ | Hard AI (Minimax) |
 
 ---
 

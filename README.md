@@ -10,6 +10,8 @@
 
 - 🏃 **Move their pawn** one step (or jump over the opponent)
 - 🧱 **Place a wall** to block the opponent's path
+- GitHub: https://github.com/MohamedWanis-05/python_quoridor
+- Video Demo: https://drive.google.com/file/d/1EHTmlFN1EHXokWTyq2GTTOw3SNyN72mC/view?usp=drive_link
 
 > ⚠️ Walls can never completely trap a player — a valid path to the goal must always exist.
 
@@ -43,7 +45,6 @@ Elle3ba-main/
 │   ├── constants.py         # Colors, tile size, window size, FPS
 │   ├── player.py            # Player class (ID + walls remaining)
 │   ├── rules.py             # Move resolution, wall checks, winner detection
-│   └── wall.py              # Reserved for future wall logic
 │
 ├── ai/
 │   ├── easy_ai.py           # Easy AI — BFS pathfinding + random wall blocking
@@ -72,8 +73,8 @@ Elle3ba-main/
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/MohamedWanis-05/Elle3ba.git
-cd Elle3ba
+git clone https://github.com/MohamedWanis-05/python_quoridor
+cd ./python_quoridor
 ```
 
 **2. Install dependencies**

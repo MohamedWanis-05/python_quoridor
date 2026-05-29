@@ -75,6 +75,8 @@ class Board:
 
             if (r, c + 1) in self.horizontal_walls:
                 return False
+            if (r, c - 1) in self.horizontal_walls:
+                return False
 
             if (r, c) in self.vertical_walls:
                 return False
@@ -88,6 +90,9 @@ class Board:
                 return False
 
             if (r, c) in self.vertical_walls:
+                return False
+
+            if (r + 1, c) in self.vertical_walls:
                 return False
 
             if (r + 1, c) in self.vertical_walls:

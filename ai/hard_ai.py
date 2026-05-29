@@ -1,158 +1,236 @@
-from game.rules import resolve_move
-from ai.pathfinding import bfs_shortest_path, bfs_path_length
 
-AI_ID = 2
-HUMAN_ID = 1
-MAX_CANDIDATES = 40
+from collections import deque
+from copy import deepcopy
+from game.constants import BOARD_SIZE
+from game.rules import resolve_move, is_inside_board, is_wall_blocking
 
-def get_hard_ai_move(board):
-    ai_dist = bfs_path_length(board, AI_ID)
-    human_dist = bfs_path_length(board, HUMAN_ID)
+DIRECTIONS = [(-1,0),(1,0),(0,-1),(0,1)]
 
-    best_wall = None
-    best_gain = 0  
 
-    if board.player_2.walls_remaining > 0:
-        candidates = _generate_wall_candidates(board)
+def shortest_path(board, player_id):
+    start = board.get_player_position(player_id)
+    goal_row = 0 if player_id == 2 else BOARD_SIZE - 1
 
-        for (wr, wc, is_horiz) in candidates:
-            if not board.can_place_wall(wr, wc, is_horiz):
-                continue
-
-            gain = _evaluate_wall(board, wr, wc, is_horiz, ai_dist, human_dist)
-            if gain > best_gain:
-                best_gain = gain
-                best_wall = (wr, wc, is_horiz)
-
-    if best_wall is not None:
-        wr, wc, is_horiz = best_wall
-        return {"type": "place_wall", "row": wr, "col": wc, "is_horizontal": is_horiz}
-
-    path = bfs_shortest_path(board, AI_ID)
-    if path:
-        move = _follow_path(board, path)
-        if move is not None:
-            return move
-
-    return _fallback_move(board)
-
-def _generate_wall_candidates(board):
-    human_path = bfs_shortest_path(board, HUMAN_ID)
-    ai_path = bfs_shortest_path(board, AI_ID)
-
-    seen = set()
-    candidates = []
-
-    def add(wr, wc, is_horiz):
-        key = (wr, wc, is_horiz)
-        if key in seen:
-            return
-        seen.add(key)
-        if 0 <= wr <= board.size - 2 and 0 <= wc <= board.size - 2:
-            candidates.append(key)
-
-    for (r, c) in human_path:
-        add(r,     c,     True)
-        add(r - 1, c,     True)
-        add(r,     c,     False)
-        add(r,     c - 1, False)
-        if len(candidates) >= MAX_CANDIDATES:
-            break
-
-    for (r, c) in ai_path:
-        if len(candidates) >= MAX_CANDIDATES:
-            break
-        add(r,     c,     True)
-        add(r - 1, c,     True)
-        add(r,     c,     False)
-        add(r,     c - 1, False)
-
-    return candidates
-
-def _evaluate_wall(board, wr, wc, is_horiz, ai_dist, human_dist):
-    sim = _board_snapshot(board)
-
-    if is_horiz:
-        sim["h_walls"].add((wr, wc))
-    else:
-        sim["v_walls"].add((wr, wc))
-
-    new_ai_dist    = _sim_bfs_length(sim, AI_ID,    board.size)
-    new_human_dist = _sim_bfs_length(sim, HUMAN_ID, board.size)
-
-    if new_ai_dist == 999 or new_human_dist == 999:
-        return -999
-
-    old_advantage = human_dist - ai_dist
-    new_advantage = new_human_dist - new_ai_dist
-    return new_advantage - old_advantage
-
-def _board_snapshot(board):
-    return {
-        "h_walls":   set(board.horizontal_walls),
-        "v_walls":   set(board.vertical_walls),
-        "positions": dict(board.player_positions),
-        "size":      board.size,
-    }
-
-def _sim_bfs_length(sim, player_id, board_size):
-    from collections import deque
-
-    start = sim["positions"][player_id]
-    goal_row = 0 if player_id == 2 else board_size - 1
-
-    queue = deque([(start, 0)])
+    queue = deque([(start, [])])
     visited = {start}
 
     while queue:
-        (r, c), dist = queue.popleft()
+        (r, c), path = queue.popleft()
 
         if r == goal_row:
-            return dist
+            return path
 
-        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nr, nc = r + dr, c + dc
+        for dr, dc in DIRECTIONS:
 
-            if not (0 <= nr < board_size and 0 <= nc < board_size):
+            nr = r + dr
+            nc = c + dc
+
+            if not is_inside_board(nr, nc, board):
                 continue
 
-            if _sim_wall_blocking(sim, r, c, dr, dc):
+            if is_wall_blocking(board, r, c, dr, dc):
                 continue
 
             if (nr, nc) not in visited:
                 visited.add((nr, nc))
-                queue.append(((nr, nc), dist + 1))
+                queue.append(((nr, nc), path + [(nr, nc)]))
 
-    return 999
+    return []
 
-def _sim_wall_blocking(sim, r, c, dr, dc):
-    h = sim["h_walls"]
-    v = sim["v_walls"]
 
-    if dr == -1:  
-        return (r - 1, c) in h or (r - 1, c - 1) in h
-    if dr == 1:   
-        return (r, c) in h or (r, c - 1) in h
-    if dc == -1:  
-        return (r, c - 1) in v or (r - 1, c - 1) in v
-    if dc == 1:   
-        return (r, c) in v or (r - 1, c) in v
-    return False
+def evaluate_board(board):
 
-def _follow_path(board, path):
-    curr_r, curr_c = board.get_player_position(AI_ID)
-    target_r, target_c = path[0]
-    dr = target_r - curr_r
-    dc = target_c - curr_c
+    ai_path = shortest_path(board, 2)
+    player_path = shortest_path(board, 1)
 
-    new_pos = resolve_move(board, AI_ID, dr, dc)
-    if new_pos not in {None, -100, -200}:
-        return {"type": "pawn_move", "position": new_pos}
+    ai_distance = len(ai_path)
+    player_distance = len(player_path)
+
+    score = (player_distance * 20) - (ai_distance * 8)
+
+    score += board.player_2.walls_remaining * 2
+
+    return score
+
+
+def generate_wall_moves(board):
+
+    moves = []
+
+    if board.player_2.walls_remaining <= 0:
+        return moves
+
+    player_path = shortest_path(board, 1)
+
+    if len(player_path) < 2:
+        return moves
+
+    for i in range(min(6, len(player_path)-1)):
+
+        r1, c1 = player_path[i]
+        r2, c2 = player_path[i+1]
+
+        candidates = []
+
+        if r1 != r2:
+
+            top = min(r1, r2)
+
+            candidates.extend([
+                (top, c1, True),
+                (top, c1 - 1, True),
+                (top, c1 + 1, True)
+            ])
+
+        if c1 != c2:
+
+            left = min(c1, c2)
+
+            candidates.extend([
+                (r1, left, False),
+                (r1 - 1, left, False),
+                (r1 + 1, left, False)
+            ])
+
+        for wr, wc, horiz in candidates:
+
+            try:
+
+                if board.can_place_wall(wr, wc, horiz):
+
+                    moves.append({
+                        "type": "place_wall",
+                        "row": wr,
+                        "col": wc,
+                        "is_horizontal": horiz
+                    })
+
+            except:
+                pass
+
+    return moves
+
+
+def generate_move(board):
+
+    ai_path = shortest_path(board, 2)
+
+    if not ai_path:
+        return None
+
+    cr, cc = board.get_player_position(2)
+    tr, tc = ai_path[0]
+
+    dr = tr - cr
+    dc = tc - cc
+
+    result = resolve_move(board, 2, dr, dc)
+
+    if result not in [None, -100, -200]:
+
+        return {
+            "type": "pawn_move",
+            "position": result
+        }
+
     return None
 
-def _fallback_move(board):
-    for dr, dc in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
-        new_pos = resolve_move(board, AI_ID, dr, dc)
-        if new_pos not in {None, -100, -200}:
-            return {"type": "pawn_move", "position": new_pos}
-    return None
+
+def apply_move(board, move):
+
+    temp = deepcopy(board)
+
+    if move["type"] == "place_wall":
+
+        if move["is_horizontal"]:
+            temp.horizontal_walls.add((move["row"], move["col"]))
+        else:
+            temp.vertical_walls.add((move["row"], move["col"]))
+
+        temp.player_2.walls_remaining -= 1
+
+    elif move["type"] == "pawn_move":
+
+        temp.player_2.position = move["position"]
+
+    return temp
+
+
+def minimax(board, depth, maximizing):
+
+    if depth == 0:
+        return evaluate_board(board)
+
+    if maximizing:
+
+        best = -999999
+
+        candidate_moves = []
+
+        move = generate_move(board)
+
+        if move:
+            candidate_moves.append(move)
+
+        candidate_moves.extend(generate_wall_moves(board))
+
+        for move in candidate_moves:
+
+            temp = apply_move(board, move)
+
+            score = minimax(temp, depth - 1, False)
+
+            # EXTRA reward for useful wall blocks
+            if move["type"] == "place_wall":
+
+                before = len(shortest_path(board, 1))
+                after = len(shortest_path(temp, 1))
+
+                score += (after - before) * 50
+
+            best = max(best, score)
+
+        return best
+
+    else:
+        player_path = shortest_path(board, 1)
+
+        if not player_path:
+            return evaluate_board(board)
+
+        return evaluate_board(board)
+
+
+def get_hard_ai_move(board):
+
+    best_score = -999999
+    best_move = None
+
+    candidate_moves = []
+
+    move = generate_move(board)
+
+    if move:
+        candidate_moves.append(move)
+
+    candidate_moves.extend(generate_wall_moves(board))
+
+    for move in candidate_moves:
+
+        temp = apply_move(board, move)
+
+        score = minimax(temp, 2, False)
+
+        if move["type"] == "place_wall":
+
+            before = len(shortest_path(board, 1))
+            after = len(shortest_path(temp, 1))
+
+            score += (after - before) * 100
+
+        if score > best_score:
+
+            best_score = score
+            best_move = move
+
+    return best_move

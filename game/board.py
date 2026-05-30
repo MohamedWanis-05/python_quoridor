@@ -95,7 +95,7 @@ class Board:
             if (r + 1, c) in self.vertical_walls:
                 return False
 
-            if (r + 1, c) in self.vertical_walls:
+            if (r - 1, c) in self.vertical_walls:
                 return False
 
             if (r, c) in self.horizontal_walls:

@@ -11,7 +11,7 @@
 - 🏃 **Move their pawn** one step (or jump over the opponent)
 - 🧱 **Place a wall** to block the opponent's path
 - GitHub: https://github.com/MohamedWanis-05/python_quoridor
-- Video Demo:
+- Video Demo: https://drive.google.com/drive/folders/15vTs4gQgHzbGLTzBqdQN6E-afAUkI4_d?usp=sharing
 
 > ⚠️ Walls can never completely trap a player — a valid path to the goal must always exist.
 
